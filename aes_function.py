@@ -39,3 +39,19 @@ def block_16_bit(s):
         row[i].append(b[i + j*4])
     matrix.append(row)
   return matrix
+
+def shift_rows(array):
+  """
+    ----------------------------------------------
+    Description:
+    Parameters:
+    Returns:
+    ----------------------------------------------
+    """
+  n = 0
+  shifted = []
+  for row in array:
+    row = row[n:] + row[:n]
+    n = n + 1
+    shifted.append(row)
+  return shifted
