@@ -1,16 +1,19 @@
-# This is a sample Python script.
+from aes_function import shift_rows
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# def aes_encrypt(plaintext, rounds):
+#     # add round key
+#     for i in (0, rounds):
+#         sub_bytes() # substitute bytes
+#         # shift rows
+#         # mix columns
+#         # add round key
+#
+# def sub_bytes():
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
+array = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]
+rot = shift_rows(array)
+for row in rot:
+    print(row)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
