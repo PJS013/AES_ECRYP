@@ -95,3 +95,9 @@ def galois_mult(number, galois_multiplier):
         return tmp if number < 128 else tmp ^ 0x1b
     elif galois_multiplier == 3:
         return galois_mult(number, 2) ^ number
+
+
+def add_round_key(matrix, round_key):
+    for r in range(4):
+        for c in range(4):
+            matrix[r][c] = matrix[r][c] ^ round_key[r][c]
