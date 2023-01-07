@@ -120,7 +120,7 @@ def add_round_key(matrix, round_key):
             matrix[r][c] = matrix[r][c] ^ round_key[r][c]
 
 
-def key_expansion(key):
+def key_expansion128(key):
     """
     ----------------------------------------------
     Description:
@@ -140,4 +140,54 @@ def key_expansion(key):
             rcon = [RC[int(i/4)-1], 0, 0, 0]
             temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
         w.append([w[i-4][j] ^ temp[j] for j in range(0, 4)])
+    return w
+
+
+def key_expansion192(key):
+    """
+    ----------------------------------------------
+    Description:
+    Parameters:
+    Returns:
+    ----------------------------------------------
+    """
+    w = []
+    for i in range(0, 6):
+        w.append([key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]])
+
+    for i in range(6, 52):
+        temp = w[i-1]
+        if i % 6 == 0:
+            x = temp[1:] + temp[:1]
+            temp = [lookup(val) for val in x]
+            rcon = [RC[int(i/6)-1], 0, 0, 0]
+            temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
+        elif i % 6 == 4:
+            temp = [lookup(val) for val in temp]
+        w.append([w[i-6][j] ^ temp[j] for j in range(0, 4)])
+    return w
+
+
+def key_expansion256(key):
+    """
+    ----------------------------------------------
+    Description:
+    Parameters:
+    Returns:
+    ----------------------------------------------
+    """
+    w = []
+    for i in range(0, 8):
+        w.append([key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]])
+
+    for i in range(8, 60):
+        temp = w[i-1]
+        if i % 8 == 0:
+            x = temp[1:] + temp[:1]
+            temp = [lookup(val) for val in x]
+            rcon = [RC[int(i/8)-1], 0, 0, 0]
+            temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
+        elif i % 8 == 4:
+            temp = [lookup(val) for val in temp]
+        w.append([w[i-8][j] ^ temp[j] for j in range(0, 4)])
     return w
