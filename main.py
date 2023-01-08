@@ -35,7 +35,7 @@ print(new_array)
 #     printhex(i)
 
 
-matrix = aes_encrypt(new_array, 10, new_key)
+matrix = aes_encrypt128(new_array, new_key)
 for i in matrix:
     printhex(i)
 

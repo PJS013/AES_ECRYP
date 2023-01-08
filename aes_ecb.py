@@ -2,7 +2,7 @@ from aes_function import *
 from aes_tables import *
 
 
-def aes_encrypt(plaintext, rounds, key):
+def aes_encrypt128(plaintext, key):
     matrices = block_16_bit(plaintext)
     for i in range(len(matrices)):
         matrix = matrices[i]
@@ -10,7 +10,7 @@ def aes_encrypt(plaintext, rounds, key):
         # add round key
         round_key = reverse_matrix(expanded_key[0:4])
         add_round_key(matrix, round_key)
-        for j in range(1, rounds):
+        for j in range(1, 10):
             for r in range(4):
                 for c in range(4):
                     matrix[r][c] = lookup(matrix[r][c])  # substitute bytes
@@ -22,6 +22,6 @@ def aes_encrypt(plaintext, rounds, key):
             for c in range(4):
                 matrix[r][c] = lookup(matrix[r][c])  # substitute bytes
         matrix = shift_rows(matrix)  # shift rows
-        round_key = reverse_matrix(expanded_key[4 * rounds:4 * rounds + 4])
+        round_key = reverse_matrix(expanded_key[40:44])
         add_round_key(matrix, round_key)  # add round key
     return matrix
