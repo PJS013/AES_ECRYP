@@ -218,3 +218,11 @@ def rewrite_matrix_into_list(s):
         for j in range(0,4):
             list.append(s[j][i])
     return list
+
+
+def padding(message):
+    if len(message) % 16 != 0:
+        message.append(0x80)
+    while len(message) % 16 != 0:
+        message.append(0)
+    return message
