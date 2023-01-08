@@ -27,6 +27,13 @@ def reverse_lookup(byte):
     return reverse_aes_sbox[x][y]
 
 
+def substitute_bytes(matrix):
+    for r in range(4):
+        for c in range(4):
+            matrix[r][c] = lookup(matrix[r][c])
+    return matrix
+
+
 def block_16_bit(s):
     """
   ----------------------------------------------
@@ -162,8 +169,6 @@ def key_expansion192(key):
             temp = [lookup(val) for val in x]
             rcon = [RC[int(i/6)-1], 0, 0, 0]
             temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
-        elif i % 6 == 4:
-            temp = [lookup(val) for val in temp]
         w.append([w[i-6][j] ^ temp[j] for j in range(0, 4)])
     return w
 

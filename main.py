@@ -1,7 +1,6 @@
 from aes_function import *
-from aes_tables import *
 from aes_ecb import *
-
+from aes_cbc import *
 
 # working example
 # array = [0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x6f]
@@ -11,11 +10,13 @@ from aes_ecb import *
 # array = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
 
 
-key = ['a','f','d','s','a','w','e','f','a','w','f','d','a','w','e','1']
-array = ['1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e']
+key = ['a','f','d','s','a','w','e','f','a','w','f','d','a','w','e','1','a','f','d','s','a','w','e','f','a','w','f','d','a','w','e','1']
+array = ['1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e','1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e']
+iv = ['1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e']
 
 new_array = []
 new_key = []
+new_iv = []
 
 for i in key:
     new_key.append(ord(i))
@@ -23,22 +24,14 @@ for i in key:
 for i in array:
     new_array.append(ord(i))
 
+for i in iv:
+    new_iv.append(ord(i))
+
 print(new_key)
 print(new_array)
-
-# array = [0xf2, 0x01, 0xc6, 0xd4, 0x0a, 0x01, 0xc6, 0xd4, 0x22, 0x01, 0xc6, 0xd4, 0x5c, 0x01, 0xc6, 0xd5]
-
-# key = [0x0f, 0x15, 0x71, 0xc9, 0x47, 0xd9, 0xe8, 0x59, 0x0c, 0xb7, 0xad, 0xd6, 0xaf, 0x7f, 0x67, 0x98]
-# round_key = key_expansion128(key)
-# n = 0
-# for i in round_key:
-#     printhex(i)
+print(new_iv)
 
 
-matrix = aes_encrypt128(new_array, new_key)
+matrix = aes_encrypt256_cbc(new_array, new_key, new_iv)
 for i in matrix:
-    printhex(i)
-
-list = rewrite_matrix_into_list(matrix)
-for i in list:
     print(hex(i), end=' ')
