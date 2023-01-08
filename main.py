@@ -10,28 +10,31 @@ from aes_cbc import *
 # array = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
 
 
+
 key = ['a','f','d','s','a','w','e','f','a','w','f','d','a','w','e','1','a','f','d','s','a','w','e','f','a','w','f','d','a','w','e','1']
 array = ['1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e','1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e']
 iv = ['1','3','s','a','s','f','a','f','d','s','a','f',' ','a','w','e']
 
 new_array = []
-new_key = []
-new_iv = []
-
-for i in key:
-    new_key.append(ord(i))
+# new_key = []
+# new_iv = []
+#
+# for i in key:
+#     new_key.append(ord(i))
 
 for i in array:
     new_array.append(ord(i))
 
-for i in iv:
-    new_iv.append(ord(i))
+a = padding(new_array)
 
-print(new_key)
-print(new_array)
-print(new_iv)
-
-
-matrix = aes_encrypt256_cbc(new_array, new_key, new_iv)
-for i in matrix:
+# for i in iv:
+#     new_iv.append(ord(i))
+#
+# print(new_key)
+# print(new_array)
+# print(new_iv)
+#
+#
+# matrix = aes_encrypt256_cbc(new_array, new_key, new_iv)
+for i in a:
     print(hex(i), end=' ')
