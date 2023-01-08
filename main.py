@@ -38,3 +38,8 @@ a = padding(new_array)
 # matrix = aes_encrypt256_cbc(new_array, new_key, new_iv)
 for i in a:
     print(hex(i), end=' ')
+print()
+b = ""
+for i in range(len(a)):
+    b += str('{:x}'.format(int(a[i])))
+print(b)
