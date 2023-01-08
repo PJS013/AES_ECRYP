@@ -206,3 +206,10 @@ def reverse_matrix(s):
 def printhex(num):
     print(hex(num[0]) + " " + hex(num[1]) + " " + hex(num[2]) + " " + hex(num[3]))
 
+
+def rewrite_matrix_into_list(s):
+    list = []
+    for i in range(0,4):
+        for j in range(0,4):
+            list.append(s[j][i])
+    return list
