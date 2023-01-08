@@ -191,3 +191,18 @@ def key_expansion256(key):
             temp = [lookup(val) for val in temp]
         w.append([w[i-8][j] ^ temp[j] for j in range(0, 4)])
     return w
+
+
+def reverse_matrix(s):
+    new_matrix = []
+    for i in range(0,4):
+        row = []
+        for j in range(0,4):
+            row.append(s[j][i])
+        new_matrix.append(row)
+    return new_matrix
+
+
+def printhex(num):
+    print(hex(num[0]) + " " + hex(num[1]) + " " + hex(num[2]) + " " + hex(num[3]))
+

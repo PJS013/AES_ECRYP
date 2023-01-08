@@ -2,26 +2,51 @@ from aes_function import *
 from aes_tables import *
 
 
-# def aes_encrypt(plaintext, rounds):
-#     # add round key
-#     for i in (0, rounds):
-#         sub_bytes() # substitute bytes
-#         # shift rows
-#         # mix columns
-#         # add round key
-#
-# def sub_bytes():
+def aes_encrypt(plaintext, rounds, key):
+    matrices = block_16_bit(plaintext)
+    for i in range(len(matrices)):
+        matrix = matrices[i]
+        expanded_key = key_expansion128(key)
+        # add round key
+        round_key = reverse_matrix(expanded_key[0:4])
+        add_round_key(matrix, round_key)
+        for j in range(1, rounds):
+            for r in range(4):
+                for c in range(4):
+                    matrix[r][c] = lookup(matrix[r][c])  # substitute bytes
+            matrix = shift_rows(matrix)  # shift rows
+            matrix = mix_columns(matrix)  # mix columns
+            round_key = reverse_matrix(expanded_key[4*j:4*j+4])
+            add_round_key(matrix, round_key)  # add round key
+        for r in range(4):
+            for c in range(4):
+                matrix[r][c] = lookup(matrix[r][c])  # substitute bytes
+        matrix = shift_rows(matrix)  # shift rows
+        round_key = reverse_matrix(expanded_key[4 * rounds:4 * rounds + 4])
+        add_round_key(matrix, round_key)  # add round key
+    return matrix
 
 
-# def printhex(num):
-#     print(hex(num[0]) + " " + hex(num[1]) + " " + hex(num[2]) + " " + hex(num[3]))
+# working example
+# array = [0x54, 0x77, 0x6f, 0x20, 0x4f, 0x6e, 0x65, 0x20, 0x4e, 0x69, 0x6e, 0x65, 0x20, 0x54, 0x77, 0x6f]
+# key = [0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6d, 0x79, 0x20, 0x4b, 0x75, 0x6e, 0x67, 0x20, 0x46, 0x75]
 
+key = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f]
+array = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
+
+
+# array = [0xf2, 0x01, 0xc6, 0xd4, 0x0a, 0x01, 0xc6, 0xd4, 0x22, 0x01, 0xc6, 0xd4, 0x5c, 0x01, 0xc6, 0xd5]
 
 # key = [0x0f, 0x15, 0x71, 0xc9, 0x47, 0xd9, 0xe8, 0x59, 0x0c, 0xb7, 0xad, 0xd6, 0xaf, 0x7f, 0x67, 0x98]
-# round_key = key_expansion(key)
-#
+# round_key = key_expansion128(key)
+# n = 0
 # for i in round_key:
 #     printhex(i)
+
+
+matrix = aes_encrypt(array, 10, key)
+for i in matrix:
+    printhex(i)
 
 
 # array = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]
