@@ -125,6 +125,14 @@ def galois_mult(number, galois_multiplier):
         return tmp if number < 128 else tmp ^ 0x1b
     elif galois_multiplier == 3:
         return galois_mult(number, 2) ^ number
+    elif galois_multiplier == 9:
+        return galois_mult(((number, 2), 2), 2) ^ number
+    elif galois_multiplier == 11:
+        return galois_mult(galois_mult(galois_mult(number, 2), 2) ^ number, 2) ^ number
+    elif galois_multiplier == 13:
+        return galois_mult(galois_mult(galois_mult(number, 2) ^ number, 2), 2) ^ number
+    elif galois_multiplier == 14:
+        return galois_mult(galois_mult(galois_mult(number, 2) ^ number, 2) ^ number, 2)
 
 
 def add_round_key(matrix, round_key):
