@@ -4,8 +4,12 @@ from aes_cbc import *
 import sys
 
 
-print(sys.argv)
-if len(sys.argv) > 1:
+# it is possible to run the code from the terminal with, or without extra command lines parameters. If no extra
+# parameters is passed, then user is asked to manually input information about operation to be done (encryption
+# or decryption, type of encryption (ecb or cbc) as well as parameters necessary for the operation in the console mode
+# user can also input data as command lines parameters running program in following manner:
+# python main.py [encrypt|decrypt] [ecb|cbc] "plaintext" "key" "initialization vector (if necessary)"
+if len(sys.argv) == 5 or len(sys.argv) == 6:
     if sys.argv[1].lower() == "encrypt":
         if sys.argv[2].lower() == "ecb":
             msg_str = sys.argv[3]
@@ -51,7 +55,7 @@ if len(sys.argv) > 1:
         print("OK")
     else:
         print("Incorrect input, try again")
-else:
+elif len(sys.argv) == 1:
     type_of_action = input("Do you want to encrypt or decrypt message? ")
     if type_of_action.lower() == "encrypt":
         type_of_encryption = input("Do you want to use ECB or CBC encryption method? ")
@@ -99,5 +103,5 @@ else:
         print("OK")
     else:
         print("Incorrect input, try again")
-
-
+else:
+    print("Incorrect number of parameters")

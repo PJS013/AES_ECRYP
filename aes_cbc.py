@@ -65,8 +65,7 @@ def aes_encrypt_cbc(plaintext, expanded_key, iv, rounds):
     cipheredtext = []
     for i in range(len(matrices)):
         matrix = matrices[i]
-        add_round_key(matrix, iv)
-        # add round key
+        add_round_key(matrix, iv)  # initialization vector is XORed with original matrix
         round_key = reverse_matrix(expanded_key[0:4])
         add_round_key(matrix, round_key)
         for j in range(1, rounds):
