@@ -74,7 +74,7 @@ def shift_rows(matrix):
     shifted = []
     for row in matrix:
         row = row[n:] + row[:n]
-        n = + 1
+        n += 1
         shifted.append(row)
     return shifted
 
@@ -134,6 +134,7 @@ def add_round_key(matrix, round_key):
     for r in range(4):
         for c in range(4):
             matrix[r][c] = matrix[r][c] ^ round_key[r][c]
+    return matrix
 
 
 def key_expansion128(key):
