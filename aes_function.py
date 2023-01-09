@@ -44,12 +44,12 @@ def substitute_bytes(matrix):
 
 def block_16_bit(s):
     """
-  ----------------------------------------------
-  Description:
-  Parameters:
-  Returns:
-  ----------------------------------------------
-  """
+    ----------------------------------------------
+    Description:
+    Parameters:
+    Returns:
+    ----------------------------------------------
+    """
     matrix = []
     for i in range(len(s) // 16):
         b = s[i * 16: i * 16 + 16]
@@ -82,9 +82,10 @@ def shift_rows(matrix):
 def mix_columns(matrix):
     """
     ----------------------------------------------
-    Description:
-    Parameters:
-    Returns:
+    Description: In AES column mixing is done by multiplication of column of matrix with message getting encrypted,
+    or decrypted with other specified matrix in GF(2^8).
+    Parameters: 4x4 matrix with integer values
+    Returns: 4x4 matrix with mixed integer values
     ----------------------------------------------
     """
     for c in range(4):
@@ -109,9 +110,11 @@ def mix_columns(matrix):
 def galois_mult(number, galois_multiplier):
     """
     ----------------------------------------------
-    Description:
-    Parameters:
-    Returns:
+    Description: Multiplication in GF(2^8) by one is simply the same number, multiplication by two is equivalent to
+    shifting the number left by one, and XORing the value by 0x1B if the highest bit is one. Multiplication by is done
+    by multiplying the number by two and then XORing it with original value again
+    Parameters: Integer number to be multiplied and galois_multiplier, that is constant that is used for multiplication
+    Returns: Integer number that is the result of multiplication
     ----------------------------------------------
     """
     if galois_multiplier == 1:
@@ -140,7 +143,11 @@ def add_round_key(matrix, round_key):
 def key_expansion128(key):
     """
     ----------------------------------------------
-    Description:
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 128 bit
+    key, expanded key starts with 4 32 bit words taken from original key, then next words are created by XORing
+    the fourth previous word with the first previous word, except for every fourth word, where the first previous word
+    that is to be XORed by the fourth previous word is first shifted by one byte to the left in the circular manner
+    and is substituted with values from the s-box
     Parameters: 128 bit key in form of a list
     Returns: matrix containing 44 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
@@ -163,7 +170,11 @@ def key_expansion128(key):
 def key_expansion192(key):
     """
     ----------------------------------------------
-    Description:
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 192 bit
+    key, expanded key starts with 6 32 bit words taken from original key, then next words are created by XORing
+    the sixth previous word with the first previous word, except for every sixth word, where the first previous word
+    that is to be XORed by the sixth previous word is first shifted by one byte to the left in the circular manner
+    and is substituted with values from the s-box
     Parameters: 192 bit key in form of a list
     Returns: matrix containing 52 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
@@ -186,7 +197,11 @@ def key_expansion192(key):
 def key_expansion256(key):
     """
     ----------------------------------------------
-    Description:
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 256 bit
+    key, expanded key starts with 8 32 bit words taken from original key, then next words are created by XORing
+    the eight previous word with the first previous word, except for every eight word, where the first previous word
+    that is to be XORed by the eight previous word is first shifted by one byte to the left in the circular manner
+    and is substituted with values from the s-box
     Parameters: 256 bit key in form of a list
     Returns: matrix containing 60 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
@@ -209,6 +224,14 @@ def key_expansion256(key):
 
 
 def reverse_matrix(s):
+    """
+    ----------------------------------------------
+    Description: Helper function used to reverse matrix in a form that values at place [1][0] is saved to the place
+    [0][1], value at place [2][1] is saved at place [1][2] and so on
+    Parameters: 4x4 matrix of integers
+    Returns: 4x4 matrix of integers
+    ----------------------------------------------
+    """
     new_matrix = []
     for i in range(0, 4):
         row = []
@@ -218,11 +241,14 @@ def reverse_matrix(s):
     return new_matrix
 
 
-def printhex(num):
-    print(hex(num[0]) + " " + hex(num[1]) + " " + hex(num[2]) + " " + hex(num[3]))
-
-
 def rewrite_matrix_into_list(s):
+    """
+    ----------------------------------------------
+    Description: Helper function used to write data from 4x4 matrix in form of a list
+    Parameters: 4x4 matrix
+    Returns: List of values
+    ----------------------------------------------
+    """
     list = []
     for i in range(0, 4):
         for j in range(0, 4):
@@ -231,6 +257,15 @@ def rewrite_matrix_into_list(s):
 
 
 def padding(message):
+    """
+    ----------------------------------------------
+    Description: ISO padding method is one of the methods used to extend the message to be encrypted, if the message is
+    too short, that is its length is not a multiple of 128 bit. In this method the message is appended with value 0x80
+    followed by as many zeroes as neeeded to fill the last block
+    Parameters: Message in form of a list of integer values
+    Returns: Padded message in form of a list of integer values
+    ----------------------------------------------
+    """
     if len(message) % 16 != 0:
         message.append(0x80)
     while len(message) % 16 != 0:
@@ -239,6 +274,14 @@ def padding(message):
 
 
 def prepare_data_for_encryption_ecb(msg_str, key_str):
+    """
+    ----------------------------------------------
+    Description: Helper function used to prepare data passed by user for encryption. User passes data in form of string
+    of characters and this function saves them in form of list of integers
+    Parameters: two strings of characters, that is message to be encrypted and encryption key
+    Returns: two lists of integers, that is message to be encrypted and encryption key
+    ----------------------------------------------
+    """
     msg = [ord(list(msg_str)[i]) for i in range(len(msg_str))]
     msg = padding(msg)
     key = [ord(list(key_str)[i]) for i in range(len(key_str))]
@@ -246,6 +289,14 @@ def prepare_data_for_encryption_ecb(msg_str, key_str):
 
 
 def prepare_data_for_encryption_cbc(msg_str, key_str, iv_str):
+    """
+    ----------------------------------------------
+    Description: Helper function used to prepare data passed by user for encryption. User passes data in form of string
+    of characters and this function saves them in form of list of integers
+    Parameters: three strings of characters, that is message to be encrypted, encryption key and initialization vector
+    Returns: three lists of integers, that is message to be encrypted, encryption key and initialization vector
+    ----------------------------------------------
+    """
     msg = [ord(list(msg_str)[i]) for i in range(len(msg_str))]
     msg = padding(msg)
     key = [ord(list(key_str)[i]) for i in range(len(key_str))]
@@ -254,6 +305,14 @@ def prepare_data_for_encryption_cbc(msg_str, key_str, iv_str):
 
 
 def list_to_string(list):
+    """
+    ----------------------------------------------
+    Description: Helper function used to write data from list filled with integers into string of hexadecimal values,
+    without the 0x prefix
+    Parameters: List of integers
+    Returns: String composed of hexadecimal values
+    ----------------------------------------------
+    """
     string = ""
     for i in range(len(list)):
         string += str('{:02x}'.format(int(list[i])))
