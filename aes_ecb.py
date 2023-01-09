@@ -64,18 +64,17 @@ def aes_encrypt_ecb(plaintext, expanded_key, rounds):
     cipheredtext = []
     for i in range(len(matrices)):
         matrix = matrices[i]
-        # add round key
         round_key = reverse_matrix(expanded_key[0:4])
-        add_round_key(matrix, round_key)
+        matrix = add_round_key(matrix, round_key)
         for j in range(1, rounds):
             matrix = substitute_bytes(matrix)  # substitute bytes
             matrix = shift_rows(matrix)  # shift rows
             matrix = mix_columns(matrix)  # mix columns
             round_key = reverse_matrix(expanded_key[4 * j:4 * j + 4])
-            add_round_key(matrix, round_key)  # add round key
+            matrix = add_round_key(matrix, round_key)  # add round key
         matrix = substitute_bytes(matrix)  # substitute bytes
         matrix = shift_rows(matrix)  # shift rows
         round_key = reverse_matrix(expanded_key[4*rounds:4*rounds+4])
-        add_round_key(matrix, round_key)  # add round key
+        matrix = add_round_key(matrix, round_key)  # add round key
         cipheredtext.extend(rewrite_matrix_into_list(matrix))
     return cipheredtext
