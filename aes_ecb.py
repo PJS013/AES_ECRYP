@@ -62,3 +62,65 @@ def decrypt_block(block, expanded_key, nr):
             state = inv_mix_columns(state)
 
     return state
+
+def inv_shift_rows(state):
+    # The rows are shifted as follows:
+    # Row 0: no shift
+    # Row 1: shift right by one
+    # Row 2: shift right by two
+    # Row 3: shift right by three
+    return bytearray([
+        state[0],
+        state[13],
+        state[10],
+        state[7],
+        state[4],
+        state[1],
+        state[14],
+        state[11],
+        state[8],
+        state[5],
+        state[2],
+        state[15],
+        state[12],
+        state[9],
+        state[6],
+        state[3],
+    ])
+
+def inv_sub_bytes(state):
+    return bytearray([reverse_aes_sbox[b] for b in state])
+
+def add_round_key(state, round_key):
+    # The state is XORed with the round key
+    return bytearray([state[i] ^ round_key[i] for i in range(16)])
+
+def inv_mix_columns(state):
+    # The inverse mix column operation is a matrix multiplication
+    # of the state matrix and the following matrix:
+    #
+    #   14 11 13  9
+    #   9  14 11 13
+    #   13  9 14 11
+    #   11 13  9 14
+    #
+    # This can be implemented using a series of shifts and XORs
+    s0 = state[0] ^ state[1] ^ state[2] ^ state[3]
+    s1 = state[0] ^ state[1]
+    s1 ^= s1 >> 1 ^ s1 >> 2
+    s2 = state[0] ^ state[2]
+    s2 ^= s2 >> 1 ^ s2 >> 2
+    s3 = state[0] ^ state[3]
+    s3 ^= s3 >> 1 ^ s3 >> 2
+    s4 = state[1] ^ state[2]
+    s4 ^= s4 >> 1 ^ s4 >> 2
+    s5 = state[1] ^ state[3]
+    s5 ^= s5 >> 1 ^ s5 >> 2
+    s6 = state[2] ^ state[3]
+    s6 ^= s6 >> 1 ^ s6 >> 2
+    return bytearray([
+        s0 ^ s2 ^ s3 ^ state[0] ^ state[1] ^ state[2] ^ state[3],
+        s1 ^ s4 ^ s6 ^ state[0] ^ state[1] ^ state[2] ^ state[3],
+        s2 ^ s4 ^ s5 ^ state[0] ^ state[1] ^ state[2] ^ state[3],
+        s3 ^ s5 ^ s6 ^ state[0] ^ state[1] ^ state[2] ^ state[3],
+    ])
