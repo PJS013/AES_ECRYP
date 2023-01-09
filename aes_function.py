@@ -236,3 +236,25 @@ def padding(message):
     while len(message) % 16 != 0:
         message.append(0)
     return message
+
+
+def prepare_data_for_encryption_ecb(msg_str, key_str):
+    msg = [ord(list(msg_str)[i]) for i in range(len(msg_str))]
+    msg = padding(msg)
+    key = [ord(list(key_str)[i]) for i in range(len(key_str))]
+    return msg, key
+
+
+def prepare_data_for_encryption_cbc(msg_str, key_str, iv_str):
+    msg = [ord(list(msg_str)[i]) for i in range(len(msg_str))]
+    msg = padding(msg)
+    key = [ord(list(key_str)[i]) for i in range(len(key_str))]
+    iv = [ord(list(iv_str)[i]) for i in range(len(iv_str))]
+    return msg, key, iv
+
+
+def list_to_string(list):
+    string = ""
+    for i in range(len(list)):
+        string += str('{:02x}'.format(int(list[i])))
+    return string
