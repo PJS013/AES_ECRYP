@@ -45,46 +45,16 @@ from aes_ecb import *
 # The key
 
 # Decrypt the ciphertext
-# key=[0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6D, 0x79, 0x20, 0x4B, 0x75, 0x6E, 0x67, 0x20, 0x46, 0x75]
+key=[0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6D, 0x79, 0x20, 0x4B, 0x75, 0x6E, 0x67, 0x20, 0x46, 0x75]
 
-# original_message=[0x54, 0x77, 0x6F, 0x20, 0x4F, 0x6E, 0x65, 0x20, 0x4E, 0x69, 0x6E, 0x65, 0x20, 0x54, 0x77, 0x6F]
+original_message=[0x54, 0x77, 0x6F, 0x20, 0x4F, 0x6E, 0x65, 0x20, 0x4E, 0x69, 0x6E, 0x65, 0x20, 0x54, 0x77, 0x6F]
 
 encrypted_message=[0x28, 0xFD, 0xDE, 0xF8, 0x6D, 0xA4, 0x24, 0x4A, 0xCC, 0xC0, 0xA4, 0xFE, 0x3B, 0x31, 0x6F, 0x26]
 
-key = b'Thats my Kung Fu'
-original_message = b'Two One Nine Two'
+# key = b'Thats my Kung Fu'
+# original_message = b'Two One Nine Two'
 
 # plaintext = aes_decrypt128(encrypted_message, key, 10)
-
-# print(plaintext == original_message)
-# print(block_16_bit(original_message))
-# print(original_message)
-# print(key_expansion128(key))
-# print("\n")
-# for i in range(1, 12):
-#     if i == 1:
-#         print(key_expansion128(key)[-4:])
-#     else:
-#         print(key_expansion128(key)[-4*i:-4*(i-1)])
-
-# for i in range(10-1, -1, -1):
-#     print(key_expansion128(key)[4*i:4*(i+1)])
-# state = key_expansion128(key)[4*10:4*(10+1)]
-# s0 = state[0][0] ^ state[1][0] ^ state[2][0] ^ state[3][0]
-# s1 = state[0][0] ^ state[1][0]
-# s1 ^= s1 * 2 ^ s1 * 4
-# s2 = state[0][0] ^ state[2][0]
-# s2 ^= s2 * 2 ^ s2 * 4
-# s3 = state[0][0] ^ state[3][0]
-# s3 ^= s3 * 2 ^ s3 * 4
-# s4 = state[1][0] ^ state[2][0]
-# s4 ^= s4 * 2 ^ s4 * 4
-# s5 = state[1][0] ^ state[3][0]
-# s5 ^= s5 * 2 ^ s5 * 4
-# s6 = state[2][0] ^ state[3][0]
-# s6 ^= s6 * 2 ^ s6 * 4
-
-# print(s1)
 
 plaintext = aes_decrypt128(encrypted_message, key, 10)
 print(plaintext)
