@@ -24,6 +24,9 @@ def reverse_lookup(byte):
   """
     x = byte >> 4
     y = byte & 15
+    print(f"Byte = {byte}")
+    print(f"X = {x}")
+    print(f"Y = {y}")
     return reverse_aes_sbox[x][y]
 
 
@@ -111,8 +114,12 @@ def add_round_key(matrix, round_key):
     """
     ----------------------------------------------
     Description:
+        Function does sth
     Parameters:
+    (type) matrix - short description
+    (type) round_key - short description
     Returns:
+    None
     ----------------------------------------------
     """
     for r in range(4):
