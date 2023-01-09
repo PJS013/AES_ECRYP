@@ -64,7 +64,8 @@ def block_16_bit(s):
 def shift_rows(matrix):
     """
     ----------------------------------------------
-    Description: this function shifts numbers in each row n positions to the left, starting from n = 0 for the first
+    Description: this function shifts numbers in each
+    row n positions to the left, starting from n = 0 for the first
     row and incrementing it
     Parameters: 4x4 matrix with integers
     Returns: 4x4 matrix with shifted values
@@ -82,7 +83,7 @@ def shift_rows(matrix):
 def mix_columns(matrix):
     """
     ----------------------------------------------
-    Description: In AES column mixing is done by multiplication of column of matrix with message getting encrypted,
+    Description: In AES column mixing is done by multiplication of columns of matrix with message getting encrypted,
     or decrypted with other specified matrix in GF(2^8).
     Parameters: 4x4 matrix with integer values
     Returns: 4x4 matrix with mixed integer values
@@ -111,8 +112,8 @@ def galois_mult(number, galois_multiplier):
     """
     ----------------------------------------------
     Description: Multiplication in GF(2^8) by one is simply the same number, multiplication by two is equivalent to
-    shifting the number left by one, and XORing the value by 0x1B if the highest bit is one. Multiplication by is done
-    by multiplying the number by two and then XORing it with original value again
+    shifting the number left by one, and XORing the value by 0x1B if the highest bit is one. Multiplication by three is
+    done by multiplying the number by two and then XORing it with original value again
     Parameters: Integer number to be multiplied and galois_multiplier, that is constant that is used for multiplication
     Returns: Integer number that is the result of multiplication
     ----------------------------------------------
@@ -146,8 +147,8 @@ def key_expansion128(key):
     Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 128 bit
     key, expanded key starts with 4 32 bit words taken from original key, then next words are created by XORing
     the fourth previous word with the first previous word, except for every fourth word, where the first previous word
-    that is to be XORed by the fourth previous word is first shifted by one byte to the left in the circular manner
-    and is substituted with values from the s-box
+    that is to be XORed by the fourth previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and xored with a round constant
     Parameters: 128 bit key in form of a list
     Returns: matrix containing 44 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
@@ -173,8 +174,8 @@ def key_expansion192(key):
     Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 192 bit
     key, expanded key starts with 6 32 bit words taken from original key, then next words are created by XORing
     the sixth previous word with the first previous word, except for every sixth word, where the first previous word
-    that is to be XORed by the sixth previous word is first shifted by one byte to the left in the circular manner
-    and is substituted with values from the s-box
+    that is to be XORed by the sixth previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and XORed with a round constant
     Parameters: 192 bit key in form of a list
     Returns: matrix containing 52 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
@@ -200,8 +201,10 @@ def key_expansion256(key):
     Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 256 bit
     key, expanded key starts with 8 32 bit words taken from original key, then next words are created by XORing
     the eight previous word with the first previous word, except for every eight word, where the first previous word
-    that is to be XORed by the eight previous word is first shifted by one byte to the left in the circular manner
-    and is substituted with values from the s-box
+    that is to be XORed by the eight previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and XORed with a round constant. If the position of the word is a multiple
+    of four, then the first previous word that is to be XORed by the eight previous word is substituted with values
+    from the s-box
     Parameters: 256 bit key in form of a list
     Returns: matrix containing 60 32 bit word that will be used as round keys in encryption process
     ----------------------------------------------
