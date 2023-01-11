@@ -126,7 +126,7 @@ def galois_mult(number, galois_multiplier):
     elif galois_multiplier == 3:
         return galois_mult(number, 2) ^ number
     elif galois_multiplier == 9:
-        return galois_mult(((number, 2), 2), 2) ^ number
+        return galois_mult(galois_mult(galois_mult(number, 2), 2), 2) ^ number
     elif galois_multiplier == 11:
         return galois_mult(galois_mult(galois_mult(number, 2), 2) ^ number, 2) ^ number
     elif galois_multiplier == 13:
@@ -233,6 +233,89 @@ def key_expansion256(key):
         w.append([w[i - 8][j] ^ temp[j] for j in range(0, 4)])
     return w
 
+def key_expansion128_decrypt(key):
+    """
+    ----------------------------------------------
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 128 bit
+    key, expanded key starts with 4 32 bit words taken from original key, then next words are created by XORing
+    the fourth previous word with the first previous word, except for every fourth word, where the first previous word
+    that is to be XORed by the fourth previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and xored with a round constant
+    Parameters: 128 bit key in form of a list
+    Returns: matrix containing 44 32 bit word that will be used as round keys in encryption process
+    ----------------------------------------------
+    """
+    w = []
+    for i in range(0, 4):
+        w.append([int(key[4 * i]), int(key[4 * i + 1]), int(key[4 * i + 2]), int(key[4 * i + 3])])
+
+    for i in range(4, 44):
+        temp = w[i - 1]
+        if i % 4 == 0:
+            x = temp[1:] + temp[:1]
+            temp = [reverse_lookup(int(val)) for val in x]
+            rcon = [RC[int(i / 4) - 1], 0, 0, 0]
+            temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
+        w.append([int(w[i - 4][j]) ^ int(temp[j]) for j in range(0, 4)])
+    return w
+
+
+def key_expansion192_decrypt(key):
+    """
+    ----------------------------------------------
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 192 bit
+    key, expanded key starts with 6 32 bit words taken from original key, then next words are created by XORing
+    the sixth previous word with the first previous word, except for every sixth word, where the first previous word
+    that is to be XORed by the sixth previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and XORed with a round constant
+    Parameters: 192 bit key in form of a list
+    Returns: matrix containing 52 32 bit word that will be used as round keys in encryption process
+    ----------------------------------------------
+    """
+    w = []
+    for i in range(0, 6):
+        w.append([key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]])
+
+    for i in range(6, 52):
+        temp = w[i - 1]
+        if i % 6 == 0:
+            x = temp[1:] + temp[:1]
+            temp = [reverse_lookup(val) for val in x]
+            rcon = [RC[int(i / 6) - 1], 0, 0, 0]
+            temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
+        w.append([w[i - 6][j] ^ temp[j] for j in range(0, 4)])
+    return w
+
+
+def key_expansion256_decrypt(key):
+    """
+    ----------------------------------------------
+    Description: AES uses a key schedule to expand shorter key into a number of separate round keys. In case of 256 bit
+    key, expanded key starts with 8 32 bit words taken from original key, then next words are created by XORing
+    the eight previous word with the first previous word, except for every eight word, where the first previous word
+    that is to be XORed by the eight previous word is first shifted by one byte to the left in the circular manner,
+    substituted with values from the s-box and XORed with a round constant. If the position of the word is a multiple
+    of four, then the first previous word that is to be XORed by the eight previous word is substituted with values
+    from the s-box
+    Parameters: 256 bit key in form of a list
+    Returns: matrix containing 60 32 bit word that will be used as round keys in encryption process
+    ----------------------------------------------
+    """
+    w = []
+    for i in range(0, 8):
+        w.append([key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]])
+
+    for i in range(8, 60):
+        temp = w[i - 1]
+        if i % 8 == 0:
+            x = temp[1:] + temp[:1]
+            temp = [reverse_lookup(val) for val in x]
+            rcon = [RC[int(i / 8) - 1], 0, 0, 0]
+            temp = [temp[j] ^ rcon[j] for j in range(0, 4)]
+        elif i % 8 == 4:
+            temp = [reverse_lookup(val) for val in temp]
+        w.append([w[i - 8][j] ^ temp[j] for j in range(0, 4)])
+    return w
 
 def reverse_matrix(s):
     """
@@ -327,4 +410,17 @@ def list_to_string(list):
     string = ""
     for i in range(len(list)):
         string += str('{:02x}'.format(int(list[i])))
+    return string
+
+def string_to_hex(input_string):
+    """
+    ----------------------------------------------
+    Description:
+    Returns: String composed of hexadecimal values
+    ----------------------------------------------
+    """
+    input_string = list(input_string)
+    string = ""
+    for i in range(len(input_string)):
+        string += str('{:02x}'.format(ord(input_string[i])))
     return string
