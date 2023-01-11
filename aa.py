@@ -7,21 +7,21 @@ from binascii import unhexlify
 import sys
 
 # test 1
-# original_text = "1122334455667788"
-# cipheredtext = "59b3fa373d90c66d45b8b12d83922a77"
-# key = "1122334455667788"
+original_text = "1122334455667788"
+cipheredtext = "59b3fa373d90c66d45b8b12d83922a77"
+key = "1122334455667788"
 
 # test 2
-key = "Lorem ipsum dol."
-original_text = "Lorem ipsum dolor sit amet cons."
-cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
+# key = "Lorem ipsum dol."
+# original_text = "Lorem ipsum dolor sit amet cons."
+# cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
 print(cipheredtext)
 
 cipheredtext_matrix = []
 j = 0
 for i in range(len(cipheredtext)):
   if i % 16 == 0:
-    print(f"{cipheredtext[16*j:16*(j+1)]} ")
+    # print(f"{cipheredtext[16*j:16*(j+1)]} ")
     cipheredtext_matrix.append(cipheredtext[16*j:16*(j+1)])
     j += 1
 
@@ -35,65 +35,60 @@ for i in range(len(cipheredtext)):
 # plain_text = decrypt_cipher.decrypt(cipher_text)
 # print(plain_text)
 # print(cipheredtext)
-cipher_matrix = []
-k = 2
-for i in range(4):
-  row = []
-  for j in range(4):
-    # print(f"k-2 {k-2}")
-    # print(f"k {k}")
-    strvalue = cipheredtext[k-2:k]
-    # print(type(strvalue))
-    # strvalue = bytes(strvalue,"utf-8")
-    strvalue = f'{strvalue}'
-    # print(strvalue)
-    # print(int(strvalue, 16))
-    strvalue = int(strvalue, 16)
-    # print(hex(strvalue))
-    # row[i] + strvalue
-    # format(strvalue, 'x')
-    k += 2
-    # strvalue = binascii.hexlify(strvalue)
-    row.append(strvalue)
-  # row_new = ', '.join(row)
-  # print(row_new)
-  # row_new = [element.strip("") for element in row_new]
-  cipher_matrix.append(row)
-print(cipher_matrix)
-# print(cipher_matrix[0].)
-
-
-# cipheredtextinhex = [
-#   [0x59, 0xb3, 0xfa, 0x37],
-#   [0x3d, 0x90, 0xc6, 0x6d],
-#   [0x45, 0xb8, 0xb1, 0x2d],
-#   [0x83, 0x92, 0x2a, 0x77]
-# ]
-cipheredtextinhex = cipher_matrix
-cipheredtextinhex = reverse_matrix(cipheredtextinhex)
-
-# def printstring(num):
-#     print(f"{num[0].decode('hex')}{num[1].decode('hex')}{num[2].decode('hex')}{num[3].decode('hex')}")
+# cipheredtext = [[cipheredtext[:2], cipheredtext[2:4], cipheredtext[4:6], cipheredtext[6:8]],
+#                 [cipheredtext[8:10], cipheredtext[10:12], cipheredtext[12:14], cipheredtext[14:16]],
+#                 [cipheredtext[16:18], cipheredtext[18:20], cipheredtext[20:22], cipheredtext[22:24]],
+#                 [cipheredtext[24:26], cipheredtext[26:28], cipheredtext[28:30], cipheredtext[30:32]]]
 _, key = prepare_data_for_encryption_ecb("", key)
 expanded_key = key_expansion128(key)
-round_key = reverse_matrix(expanded_key[-4:])
-matrix = add_round_key(cipheredtextinhex, round_key)
-for j in range(1, 10):
-    matrix = inv_shift_rows(matrix)  # shift rows
-    matrix = inv_sub_bytes(matrix)  # substitute bytes
-    round_key = reverse_matrix(expanded_key[-(4*j+4):-(4*j)])
-    matrix = add_round_key(matrix, round_key)  # add round key
-    matrix = inv_mix_columns(matrix)  # mix columns
-matrix = inv_shift_rows(matrix)  # shift rows
-matrix = inv_sub_bytes(matrix)  # substitute bytes
-round_key = reverse_matrix(expanded_key[0:4])
-matrix = add_round_key(matrix, round_key)
-message = rewrite_matrix_into_list(matrix)
-# print(message)
+plaintext = ""
+NUM_OF_BLOCKS = 0
+for i in range(len(cipheredtext)):
+  if i % 32 == 0:
+    # print(f"{cipheredtext[16*NUM_OF_BLOCKS:16*(NUM_OF_BLOCKS+1)]}")
+    cipheredtext_matrix.append(cipheredtext[16*NUM_OF_BLOCKS:16*(NUM_OF_BLOCKS+1)])
+    NUM_OF_BLOCKS += 1
 
-message = [chr(element) for element in message]
-message = [''.join(message)]
-print(message)
+k = 2
+for block in range(NUM_OF_BLOCKS):
+  cipher_matrix = []
+
+  for i in range(4):
+    row = []
+    for j in range(4):
+      strvalue = cipheredtext[k-2:k]
+      strvalue = f'{strvalue}'
+      strvalue = int(strvalue, 16)
+      # print(k)
+      k += 2
+      row.append(strvalue)
+    cipher_matrix.append(row)
+
+  # print(cipher_matrix)
+
+  cipheredtextinhex = cipher_matrix
+  cipheredtextinhex = reverse_matrix(cipheredtextinhex)
+
+#################################################################
+  round_key = reverse_matrix(expanded_key[-4:])
+  matrix = add_round_key(cipheredtextinhex, round_key)
+  for j in range(1, 10):
+      matrix = inv_shift_rows(matrix)  # shift rows
+      matrix = inv_sub_bytes(matrix)  # substitute bytes
+      round_key = reverse_matrix(expanded_key[-(4*j+4):-(4*j)])
+      matrix = add_round_key(matrix, round_key)  # add round key
+      matrix = inv_mix_columns(matrix)  # mix columns
+  matrix = inv_shift_rows(matrix)  # shift rows
+  matrix = inv_sub_bytes(matrix)  # substitute bytes
+  round_key = reverse_matrix(expanded_key[0:4])
+  matrix = add_round_key(matrix, round_key)
+  message = rewrite_matrix_into_list(matrix)
+
+  message = [chr(element) for element in message]
+  message = ''.join(message)
+  plaintext += message
+
+print(plaintext)
 
 # decryptedtext = aes_decrypt128_ecb(cipheredtext, key, 10)
 # # print(decryptedtext)
