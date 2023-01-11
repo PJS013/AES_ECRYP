@@ -95,13 +95,18 @@ def convert_blocks_elements_to_hex(blocks):
 
 def aes_decrypt128_ecb(ciphertext, key, nr):
     # The key is expanded using the key schedule to generate a sequence of round keys.
-    print(f"Key is {key}")
-    expanded_key = key_expansion128_decrypt(key)
+    # n=2
+    # ciphertext = [int(ciphertext[i:i+n]) for i in range(0, len(ciphertext), n)]
+    print(f"begining {ciphertext}")
+    _, key = prepare_data_for_encryption_ecb("", key)
+    expanded_key = key_expansion128(key)
     # expanded_key = expanded_key[4:]
-    print(f"len of expanded key {len(expanded_key)}")
     # The ciphertext is divided into blocks, and each block is decrypted separately.
     blocks = block_16_bit(ciphertext)
-    blocks = convert_blocks_elements_to_hex(blocks)
+    # print(blocks)
+    # blocks = convert_blocks_elements_to_hex(blocks)
+    # print(blocks)
+
     plaintext = []
     # The decryption of a block begins with the Add Round Key step, where the round key is added to the state using XOR.
     # The state is then transformed through a series of steps, including:
@@ -115,117 +120,42 @@ def aes_decrypt128_ecb(ciphertext, key, nr):
     # print(expanded_key)
     return plaintext
 
-def decrypt_block(block, expanded_key, nr):
+def decrypt_block(matrix, expanded_key, nr):
      # Initialize the state with the block
-    state = block
     # print(state)
     # Add the initial round key
     # state = add_round_key_decrypt(state, expanded_key[4*nr:])
-    print(f"State after first round {state}")
-    print(f"Expanded key {expanded_key}")
+    # print(f"State after first round {state}")
+    # print(f"Expanded key {expanded_key}")
     # Perform the rounds in reverse order
+    matrix = add_round_key(matrix, reverse_matrix(expanded_key[-4:]))
 
-    # 10 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-4:])
-    state = inv_mix_columns(state)
+    for i in range(nr-1, 0, -1):
+        matrix = inv_shift_rows(matrix)
+        matrix = inv_sub_bytes(matrix)
+        matrix = add_round_key(matrix, reverse_matrix(expanded_key[4*i:4*(i+1)]))
+        matrix = inv_mix_columns(matrix)
 
-    # 9 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-8:-4])
-    state = inv_mix_columns(state)
-
-    # 8 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-12:-8])
-    state = inv_mix_columns(state)
-
-    # 7 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-16:-12])
-    state = inv_mix_columns(state)
-
-    # 6 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-20:-16])
-    state = inv_mix_columns(state)
-
-    # 5 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-24:-20])
-    state = inv_mix_columns(state)
-
-    # 4 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-28:-24])
-    state = inv_mix_columns(state)
-
-    # 3 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-32:-28])
-    state = inv_mix_columns(state)
-    # 59a63d1088f22440df911429a2c818ad
-    # 59b3fa373d90c66d45b8b12d83922a77
-    # 2 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-36:-32])
-    state = inv_mix_columns(state)
-
-    # 1 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-40:-36])
-    state = inv_mix_columns(state)
-
-    # 0 round
-    state = inv_shift_rows(state)
-    state = inv_sub_bytes(state)
-    state = add_round_key_decrypt(state, expanded_key[-44:-40])
-
-    # for i in range(nr-1, -1, -1):
-    #     state = inv_shift_rows(state)
-    #     state = inv_sub_bytes(state)
-    #     print(f"State {i} at {state}")
-    #     print(f"Key {i} at {expanded_key[4*i:4*(i+1)]}")
-    #     state = add_round_key_decrypt(state, expanded_key[4*i:4*(i+1)])
-    #     if i > 0:
-    #         state = inv_mix_columns(state)
-
-    return state
-
-def add_round_key_decrypt(state, round_key):
-    # The state is XORed with the round key
-    for r in range(4):
-        for c in range(4):
-            # print(f"state[r][c] - {state[r][c]}")
-            # print(f"round_key[r][c] - {round_key[r][c]}")
-            state[r][c] = state[r][c] ^ round_key[r][c]
-
-    return state
+    matrix = inv_shift_rows(matrix)
+    matrix = inv_sub_bytes(matrix)
+    matrix = add_round_key(matrix, reverse_matrix(expanded_key[:4]))
+    return matrix
 
 
-def inv_shift_rows(state):
+
+def inv_shift_rows(matrix):
     return [
-        [state[0][0], state[0][1], state[0][2], state[0][3]],
-        [state[1][3], state[1][0], state[1][1], state[1][2]],
-        [state[2][2], state[2][3], state[2][0], state[2][1]],
-        [state[3][1], state[3][2], state[3][3], state[3][3]]
+        [matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]],
+        [matrix[1][3], matrix[1][0], matrix[1][1], matrix[1][2]],
+        [matrix[2][2], matrix[2][3], matrix[2][0], matrix[2][1]],
+        [matrix[3][1], matrix[3][2], matrix[3][3], matrix[3][0]]
     ]
 
-def inv_sub_bytes(state):
+def inv_sub_bytes(matrix):
     for r in range(0, 4):
         for c in range(0, 4):
-            state[r][c]=reverse_lookup((state[r][c]))
-    return state
+            matrix[r][c]=reverse_lookup((matrix[r][c]))
+    return matrix
 
 def inv_mix_columns(matrix):
     for c in range(4):

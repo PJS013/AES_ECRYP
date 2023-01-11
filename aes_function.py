@@ -121,6 +121,7 @@ def galois_mult(number, galois_multiplier):
     if galois_multiplier == 1:
         return number
     elif galois_multiplier == 2:
+
         tmp = (number << 1) & 0xff
         return tmp if number < 128 else tmp ^ 0x1b
     elif galois_multiplier == 3:
