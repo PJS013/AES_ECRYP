@@ -1,5 +1,42 @@
 from aes_function import *
 
+def cbc_encryption():
+    msg_str = sys.argv[3]
+    key_str = sys.argv[4]
+    iv_str = sys.argv[5]
+    if len(iv_str) != 16:
+        print("Length of initialization vector invalid")
+    else:
+        if len(key_str) == 16:
+            msg, key, iv = prepare_data_for_encryption_cbc(msg_str, key_str, iv_str)
+            cipheredtext = list_to_string(aes_encrypt128_cbc(msg, key, iv))
+            print(cipheredtext)
+        elif len(key_str) == 24:
+            msg, key, iv = prepare_data_for_encryption_cbc(msg_str, key_str, iv_str)
+            cipheredtext = list_to_string(aes_encrypt192_cbc(msg, key, iv))
+            print(cipheredtext)
+        elif len(key_str) == 32:
+            msg, key, iv = prepare_data_for_encryption_cbc(msg_str, key_str, iv_str)
+            cipheredtext = list_to_string(aes_encrypt256_cbc(msg, key, iv))
+            print(cipheredtext)
+        else:
+            print("Length of key is invalid")
+
+def cbc_decryption():
+    msg_str = sys.argv[3]
+    key_str = sys.argv[4]
+    iv_str = sys.argv[5]
+    if len(iv_str) != 16:
+        print("Length of initialization vector invalid")
+    else:
+        if len(key_str) == 16:
+            pass
+        elif len(key_str) == 24:
+            pass
+        elif len(key_str) == 32:
+            pass
+        else:
+            print("Length of key is invalid")
 
 def aes_encrypt128_cbc(plaintext, key, iv):
     """

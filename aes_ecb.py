@@ -1,5 +1,38 @@
 from aes_function import *
+import sys
 
+def ecb_encryption():
+    msg_str = sys.argv[3]
+    key_str = sys.argv[4]
+    if len(key_str) == 16:
+        msg, key = prepare_data_for_encryption_ecb(msg_str, key_str)
+        cipheredtext = list_to_string(aes_encrypt128_ecb(msg, key))
+        print(cipheredtext)
+    elif len(key_str) == 24:
+        msg, key = prepare_data_for_encryption_ecb(msg_str, key_str)
+        cipheredtext = list_to_string(aes_encrypt192_ecb(msg, key))
+        print(cipheredtext)
+    elif len(key_str) == 32:
+        msg, key = prepare_data_for_encryption_ecb(msg_str, key_str)
+        cipheredtext = list_to_string(aes_encrypt256_ecb(msg, key))
+        print(cipheredtext)
+    else:
+        print("Length of key is invalid")
+
+def ecb_decryption():
+    msg_str = sys.argv[3]
+    key_str = sys.argv[4]
+    if len(key_str) == 16:
+        plaintext = aes_decrypt128_ecb(msg_str, key_str)
+        print(plaintext)
+    elif len(key_str) == 24:
+        plaintext = aes_decrypt192_ecb(msg_str, key_str)
+        print(plaintext)
+    elif len(key_str) == 32:
+        plaintext = aes_decrypt256_ecb(msg_str, key_str)
+        print(plaintext)
+    else:
+        print("Length of key is invalid")
 
 def aes_encrypt128_ecb(plaintext, key):
     """
@@ -80,67 +113,110 @@ def aes_encrypt_ecb(plaintext, expanded_key, rounds):
         cipheredtext.extend(rewrite_matrix_into_list(matrix))
     return cipheredtext
 
-def convert_blocks_elements_to_hex(blocks):
-  for block in blocks:
-    wrap_row = []
-    for small_block in block:
-      row = []
-      for ch in small_block:
-        ch_in_hex = ord(ch)
-        row.append(ch_in_hex)
+# def convert_blocks_elements_to_hex(blocks):
+#   for block in blocks:
+#     wrap_row = []
+#     for small_block in block:
+#       row = []
+#       for ch in small_block:
+#         ch_in_hex = ord(ch)
+#         row.append(ch_in_hex)
 
-      wrap_row.append(row)
+#       wrap_row.append(row)
 
-  return [wrap_row]
+#   return [wrap_row]
 
-def aes_decrypt128_ecb(ciphertext, key, nr):
+def prepare_ciphered_matrix(cipheredtext):
+    # print(cipheredtext)
+    # print(f"len {len(cipheredtext)}")
+    cipheredtext_matrix = []
+    num_of_blocks = 0
+    for i in range(len(cipheredtext)):
+        if i % 32 == 0:
+            # print(i)
+            cipheredtext_matrix.append(cipheredtext[16*num_of_blocks:16*(num_of_blocks+1)])
+            num_of_blocks += 1
+
+    # print(f"cipheredtext_matrix - {cipheredtext_matrix}")
+    # print(f"num_of_blocks - {num_of_blocks}")
+    return cipheredtext_matrix, num_of_blocks
+
+def aes_decrypt128_ecb(cipheredtext, key):
     # The key is expanded using the key schedule to generate a sequence of round keys.
-    # n=2
-    # ciphertext = [int(ciphertext[i:i+n]) for i in range(0, len(ciphertext), n)]
-    print(f"begining {ciphertext}")
     _, key = prepare_data_for_encryption_ecb("", key)
     expanded_key = key_expansion128(key)
-    # expanded_key = expanded_key[4:]
-    # The ciphertext is divided into blocks, and each block is decrypted separately.
-    blocks = block_16_bit(ciphertext)
-    # print(blocks)
-    # blocks = convert_blocks_elements_to_hex(blocks)
-    # print(blocks)
+    plaintext = aes_decrypt_ecb(cipheredtext, expanded_key, 10)
+    return plaintext
 
-    plaintext = []
+def aes_decrypt192_ecb(cipheredtext, key):
+    # The key is expanded using the key schedule to generate a sequence of round keys.
+    _, key = prepare_data_for_encryption_ecb("", key)
+    expanded_key = key_expansion192(key)
+    plaintext = aes_decrypt_ecb(cipheredtext, expanded_key, 12)
+    return plaintext
+
+def aes_decrypt256_ecb(cipheredtext, key):
+    # The key is expanded using the key schedule to generate a sequence of round keys.
+    _, key = prepare_data_for_encryption_ecb("", key)
+    expanded_key = key_expansion256(key)
+    plaintext = aes_decrypt_ecb(cipheredtext, expanded_key, 14)
+    return plaintext
+
+def aes_decrypt_ecb(cipheredtext, expanded_key, nr):
+
+    # The ciphertext is divided into blocks, and each block is decrypted separately.
+    cipheredtext_matrix, num_of_blocks = prepare_ciphered_matrix(cipheredtext)
+
     # The decryption of a block begins with the Add Round Key step, where the round key is added to the state using XOR.
     # The state is then transformed through a series of steps, including:
     # - Inverse Shift Rows,
     # - Inverse Sub Bytes
     # - Inverse Mix Columns steps.
-    for block in blocks:
-        plaintext.append(decrypt_block(block, expanded_key, nr))
+    plaintext = decrypt_block(cipheredtext, num_of_blocks, expanded_key, nr)
+
     # These steps are designed to undo the operations that were performed during the encryption process.
     # The final state of the last round is the plaintext.
-    # print(expanded_key)
     return plaintext
 
-def decrypt_block(matrix, expanded_key, nr):
-     # Initialize the state with the block
-    # print(state)
-    # Add the initial round key
-    # state = add_round_key_decrypt(state, expanded_key[4*nr:])
-    # print(f"State after first round {state}")
-    # print(f"Expanded key {expanded_key}")
-    # Perform the rounds in reverse order
-    matrix = add_round_key(matrix, reverse_matrix(expanded_key[-4:]))
+def decrypt_block(cipheredtext, num_of_blocks, expanded_key, nr):
+    k = 2
+    plaintext = ""
+    for _ in range(num_of_blocks):
+        cipher_matrix = []
 
-    for i in range(nr-1, 0, -1):
-        matrix = inv_shift_rows(matrix)
-        matrix = inv_sub_bytes(matrix)
-        matrix = add_round_key(matrix, reverse_matrix(expanded_key[4*i:4*(i+1)]))
-        matrix = inv_mix_columns(matrix)
+        for i in range(4):
+            row = []
+            for j in range(4):
+                strvalue = cipheredtext[k-2:k]
+                strvalue = f'{strvalue}'
+                strvalue = int(strvalue, 16)
+                k += 2
+                row.append(strvalue)
+            cipher_matrix.append(row)
 
-    matrix = inv_shift_rows(matrix)
-    matrix = inv_sub_bytes(matrix)
-    matrix = add_round_key(matrix, reverse_matrix(expanded_key[:4]))
-    return matrix
+        cipheredtextinhex = cipher_matrix
+        cipheredtextinhex = reverse_matrix(cipheredtextinhex)
 
+        round_key = reverse_matrix(expanded_key[-4:])
+        matrix = add_round_key(cipheredtextinhex, round_key)
+        for j in range(1, nr):
+            matrix = inv_shift_rows(matrix)  # shift rows
+            matrix = inv_sub_bytes(matrix)  # substitute bytes
+            round_key = reverse_matrix(expanded_key[-(4*j+4):-(4*j)])
+            matrix = add_round_key(matrix, round_key)  # add round key
+            matrix = inv_mix_columns(matrix)  # mix columns
+        matrix = inv_shift_rows(matrix)  # shift rows
+        matrix = inv_sub_bytes(matrix)  # substitute bytes
+        round_key = reverse_matrix(expanded_key[0:4])
+        matrix = add_round_key(matrix, round_key)
+        message = rewrite_matrix_into_list(matrix)
+
+        message = [chr(element) for element in message]
+        message = ''.join(message)
+        plaintext += message
+        print(message)
+
+    return plaintext
 
 
 def inv_shift_rows(matrix):
