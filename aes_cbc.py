@@ -155,8 +155,8 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
     plaintext = ""
     k = 2
     iv = block_16_bit(iv)[0]
-
-    for _ in range(num_of_blocks):
+    # print(num_of_blocks)
+    for z in range(num_of_blocks):
         cipher_matrix = []
 
         for i in range(4):
@@ -168,8 +168,10 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
                 k += 2
                 row.append(strvalue)
             cipher_matrix.append(row)
-
+        # print(f"Round {z} {cipher_matrix}")
         # Init round
+
+
         cipher_matrix = reverse_matrix(cipher_matrix)
         round_key = reverse_matrix(expanded_key[-4:])
         matrix = add_round_key(cipher_matrix, round_key)
@@ -182,19 +184,26 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
             matrix = add_round_key(matrix, round_key)  # add round key
             matrix = inv_mix_columns(matrix)  # mix columns
 
-        # Add initialization vector
-        matrix = add_round_key(cipher_matrix, iv)
-
         # End round
         matrix = inv_shift_rows(matrix)  # shift rows
         matrix = inv_sub_bytes(matrix)  # substitute bytes
         round_key = reverse_matrix(expanded_key[0:4])
         matrix = add_round_key(matrix, round_key)
 
+        # Adding iv key to XOR the matrix
+        if z == 0:
+            matrix = add_round_key(matrix, iv)
+
         # Post decryption processing
         message = rewrite_matrix_into_list(matrix)
         message = [chr(element) for element in message]
         message = ''.join(message)
+        print("Post decryption")
+        print(f"Cipher matrix {cipher_matrix}")
+        print(f"Round {z}\n{message}")
+        print("-------------------------")
         plaintext += message
+
+        # iv = matrix
 
     return plaintext

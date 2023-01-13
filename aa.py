@@ -31,9 +31,11 @@ original_text="Lorem ipsum dolor sit amet cons."
 cipheredtext="121cc1017c2b473144b9f9d7bfd7cedf09fd4de11baa6247e6554de744ef8bd6"
 key="Lorem ipsum dol."
 iv = "Lorem ipsum dol."
+print(original_text)
+
 _, key, iv = prepare_data_for_encryption_cbc("", key, iv)
 message=aes_decrypt128_cbc(cipheredtext, key, iv)
-print(message)
+# print(message)
 # print(block_16_bit("Lorem ipsum dol.")[0])
 
 # j = 0
