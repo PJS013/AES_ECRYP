@@ -41,3 +41,50 @@ print("Expected outcome: 3188ed57f22dfb016fef7225dfe3f502755282d3833cc50ef7af070
 print("Outcome of the encryption using out code:")
 os.system('python main.py encrypt cbc "Lorem ipsum dolor sit amet cons." "Lorem ipsum dolor sit amet cons." "Lorem ipsum dol."')
 print()
+
+print("____________________________________________________________________________")
+
+
+print("Test #7 - decryption in ecb mode with 16 bit key: Lorem ipsum dol.")
+print("Encrypted text: cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt ecb "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df" "Lorem ipsum dol."')
+print()
+
+print("Test #8 - decryption in ecb mode with 24 bit key: Lorem ipsum dolor donec.")
+print("Encrypted text: 3f72f69eb7f0c07bcbac125c03c835cadc258ae65bfca7d09ff02b7b65e1e268")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt ecb "3f72f69eb7f0c07bcbac125c03c835cadc258ae65bfca7d09ff02b7b65e1e268" "Lorem ipsum dolor donec."')
+print()
+
+print("Test #9 - decryption in ecb mode with 32 bit key: Lorem ipsum dolor sit amet cons.")
+print("Encrypted text: 12f4f7d7cfe671d954badff41d896fe81aaf91f83e342421c6e7d9c8bbee693f")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt ecb "12f4f7d7cfe671d954badff41d896fe81aaf91f83e342421c6e7d9c8bbee693f" "Lorem ipsum dolor sit amet cons."')
+print()
+
+print("For the following cbc decryption tests same 16 bit initialization vector was used: Lorem ipsum dol.")
+print("Test #10 - decryption in cbc mode with 16 bit key: Lorem ipsum dol.")
+print("Encrypted text: 121cc1017c2b473144b9f9d7bfd7cedf09fd4de11baa6247e6554de744ef8bd6")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt cbc "121cc1017c2b473144b9f9d7bfd7cedf09fd4de11baa6247e6554de744ef8bd6" "Lorem ipsum dol." "Lorem ipsum dol."')
+print()
+
+print("Test #11 - decryption in cbc mode with 24 bit key: Lorem ipsum dolor donec.")
+print("Expected outcome: 50b1db0899baf667640c7d885aae383b83577b170ab567bf4b0d86c09f1416d9")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt cbc "50b1db0899baf667640c7d885aae383b83577b170ab567bf4b0d86c09f1416d9" "Lorem ipsum dolor donec." "Lorem ipsum dol."')
+print()
+
+print("Test #12 - decryption in cbc mode with 32 bit key: Lorem ipsum dolor sit amet cons.")
+print("Expected outcome: 3188ed57f22dfb016fef7225dfe3f502755282d3833cc50ef7af0702eaadd1aa")
+print("Original text: Lorem ipsum dolor sit amet cons.")
+print("Outcome of the encryption using out code:")
+os.system('python main.py decrypt cbc "3188ed57f22dfb016fef7225dfe3f502755282d3833cc50ef7af0702eaadd1aa" "Lorem ipsum dolor sit amet cons." "Lorem ipsum dol."')
+print()
+

@@ -127,6 +127,16 @@ def aes_decrypt128_cbc(cipheredtext, key, iv):
     plaintext = aes_decrypt_cbc(cipheredtext, expanded_key, iv, 10)
     return plaintext
 
+def aes_decrypt192_cbc(cipheredtext, key, iv):
+    expanded_key = key_expansion192(key)
+    plaintext = aes_decrypt_cbc(cipheredtext, expanded_key, iv, 12)
+    return plaintext
+
+def aes_decrypt256_cbc(cipheredtext, key, iv):
+    expanded_key = key_expansion256(key)
+    plaintext = aes_decrypt_cbc(cipheredtext, expanded_key, iv, 14)
+    return plaintext
+
 def aes_decrypt_cbc(cipheredtext, expanded_key, iv, nr):
     # The ciphertext is divided into blocks, and each block is decrypted separately.
     cipheredtext_matrix, num_of_blocks = prepare_ciphered_matrix(cipheredtext)
@@ -155,7 +165,8 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
     plaintext = ""
     k = 2
     iv = block_16_bit(iv)[0]
-    # print(num_of_blocks)
+    print(f"iv is {iv}")
+    print(num_of_blocks)
     for z in range(num_of_blocks):
         cipher_matrix = []
 
@@ -169,9 +180,10 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
                 row.append(strvalue)
             cipher_matrix.append(row)
         # print(f"Round {z} {cipher_matrix}")
-        # Init round
-
-
+        # iv_next = 0
+        iv_next = cipher_matrix
+        # print(f"iv_next before init {iv_next}")
+        # # Init round
         cipher_matrix = reverse_matrix(cipher_matrix)
         round_key = reverse_matrix(expanded_key[-4:])
         matrix = add_round_key(cipher_matrix, round_key)
@@ -191,8 +203,7 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
         matrix = add_round_key(matrix, round_key)
 
         # Adding iv key to XOR the matrix
-        if z == 0:
-            matrix = add_round_key(matrix, iv)
+        matrix = add_round_key(matrix, iv)
 
         # Post decryption processing
         message = rewrite_matrix_into_list(matrix)
@@ -204,6 +215,8 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
         print("-------------------------")
         plaintext += message
 
-        # iv = matrix
+        iv = iv_next
+        iv = reverse_matrix(iv)
+
 
     return plaintext
