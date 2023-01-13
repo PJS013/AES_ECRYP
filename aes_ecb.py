@@ -102,7 +102,6 @@ def aes_encrypt_ecb(plaintext, expanded_key, rounds):
         for j in range(1, rounds):
             matrix = substitute_bytes(matrix)  # substitute bytes
             matrix = shift_rows(matrix)  # shift rows
-            # print(type(matrix))
             matrix = mix_columns(matrix)  # mix columns
             round_key = reverse_matrix(expanded_key[4 * j:4 * j + 4])
             matrix = add_round_key(matrix, round_key)  # add round key
@@ -112,34 +111,6 @@ def aes_encrypt_ecb(plaintext, expanded_key, rounds):
         matrix = add_round_key(matrix, round_key)  # add round key
         cipheredtext.extend(rewrite_matrix_into_list(matrix))
     return cipheredtext
-
-# def convert_blocks_elements_to_hex(blocks):
-#   for block in blocks:
-#     wrap_row = []
-#     for small_block in block:
-#       row = []
-#       for ch in small_block:
-#         ch_in_hex = ord(ch)
-#         row.append(ch_in_hex)
-
-#       wrap_row.append(row)
-
-#   return [wrap_row]
-
-def prepare_ciphered_matrix(cipheredtext):
-    # print(cipheredtext)
-    # print(f"len {len(cipheredtext)}")
-    cipheredtext_matrix = []
-    num_of_blocks = 0
-    for i in range(len(cipheredtext)):
-        if i % 32 == 0:
-            # print(i)
-            cipheredtext_matrix.append(cipheredtext[16*num_of_blocks:16*(num_of_blocks+1)])
-            num_of_blocks += 1
-
-    # print(f"cipheredtext_matrix - {cipheredtext_matrix}")
-    # print(f"num_of_blocks - {num_of_blocks}")
-    return cipheredtext_matrix, num_of_blocks
 
 def aes_decrypt128_ecb(cipheredtext, key):
     # The key is expanded using the key schedule to generate a sequence of round keys.
@@ -163,7 +134,6 @@ def aes_decrypt256_ecb(cipheredtext, key):
     return plaintext
 
 def aes_decrypt_ecb(cipheredtext, expanded_key, nr):
-
     # The ciphertext is divided into blocks, and each block is decrypted separately.
     cipheredtext_matrix, num_of_blocks = prepare_ciphered_matrix(cipheredtext)
 
@@ -179,6 +149,15 @@ def aes_decrypt_ecb(cipheredtext, expanded_key, nr):
     return plaintext
 
 def decrypt_block(cipheredtext, num_of_blocks, expanded_key, nr):
+    """
+    Description:
+    Parameters:
+        (string) cipheredtext - text to decrypt
+        (int) num_of_blocks - number of blocks to process
+        (string) expanded_key - a key used in decryption process
+        (int) nr - number of rounds
+    Returns:
+    """
     k = 2
     plaintext = ""
     for _ in range(num_of_blocks):
@@ -194,61 +173,32 @@ def decrypt_block(cipheredtext, num_of_blocks, expanded_key, nr):
                 row.append(strvalue)
             cipher_matrix.append(row)
 
-        cipheredtextinhex = cipher_matrix
-        cipheredtextinhex = reverse_matrix(cipheredtextinhex)
-
+        # Init round
+        cipher_matrix = reverse_matrix(cipher_matrix)
         round_key = reverse_matrix(expanded_key[-4:])
-        matrix = add_round_key(cipheredtextinhex, round_key)
+        matrix = add_round_key(cipher_matrix, round_key)
+
+        # Core rounds
         for j in range(1, nr):
             matrix = inv_shift_rows(matrix)  # shift rows
             matrix = inv_sub_bytes(matrix)  # substitute bytes
             round_key = reverse_matrix(expanded_key[-(4*j+4):-(4*j)])
             matrix = add_round_key(matrix, round_key)  # add round key
             matrix = inv_mix_columns(matrix)  # mix columns
+
+        # End round
         matrix = inv_shift_rows(matrix)  # shift rows
         matrix = inv_sub_bytes(matrix)  # substitute bytes
         round_key = reverse_matrix(expanded_key[0:4])
         matrix = add_round_key(matrix, round_key)
-        message = rewrite_matrix_into_list(matrix)
 
+        # Post decryption processing
+        message = rewrite_matrix_into_list(matrix)
         message = [chr(element) for element in message]
         message = ''.join(message)
         plaintext += message
-        print(message)
 
     return plaintext
 
 
-def inv_shift_rows(matrix):
-    return [
-        [matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]],
-        [matrix[1][3], matrix[1][0], matrix[1][1], matrix[1][2]],
-        [matrix[2][2], matrix[2][3], matrix[2][0], matrix[2][1]],
-        [matrix[3][1], matrix[3][2], matrix[3][3], matrix[3][0]]
-    ]
 
-def inv_sub_bytes(matrix):
-    for r in range(0, 4):
-        for c in range(0, 4):
-            matrix[r][c]=reverse_lookup((matrix[r][c]))
-    return matrix
-
-def inv_mix_columns(matrix):
-    for c in range(4):
-        col = [
-            matrix[0][c],
-            matrix[1][c],
-            matrix[2][c],
-            matrix[3][c]
-        ]
-        col = [
-            galois_mult(col[0], 14) ^ galois_mult(col[1], 11) ^ galois_mult(col[2], 13) ^ galois_mult(col[3], 9),
-            galois_mult(col[0], 9) ^ galois_mult(col[1], 14) ^ galois_mult(col[2], 11) ^ galois_mult(col[3], 13),
-            galois_mult(col[0], 13) ^ galois_mult(col[1], 9) ^ galois_mult(col[2], 14) ^ galois_mult(col[3], 11),
-            galois_mult(col[0], 11) ^ galois_mult(col[1], 13) ^ galois_mult(col[2], 9) ^ galois_mult(col[3], 14)
-        ]
-        matrix[0][c] = col[0]
-        matrix[1][c] = col[1]
-        matrix[2][c] = col[2]
-        matrix[3][c] = col[3]
-    return matrix

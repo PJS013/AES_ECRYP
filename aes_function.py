@@ -425,3 +425,51 @@ def string_to_hex(input_string):
     for i in range(len(input_string)):
         string += str('{:02x}'.format(ord(input_string[i])))
     return string
+
+def prepare_ciphered_matrix(cipheredtext):
+    cipheredtext_matrix = []
+    num_of_blocks = 0
+
+    for i in range(len(cipheredtext)):
+        if i % 32 == 0:
+            cipheredtext_matrix.append(cipheredtext[16*num_of_blocks:16*(num_of_blocks+1)])
+            num_of_blocks += 1
+
+    return cipheredtext_matrix, num_of_blocks
+
+def inv_shift_rows(matrix):
+    """"""
+    return [
+        [matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]],
+        [matrix[1][3], matrix[1][0], matrix[1][1], matrix[1][2]],
+        [matrix[2][2], matrix[2][3], matrix[2][0], matrix[2][1]],
+        [matrix[3][1], matrix[3][2], matrix[3][3], matrix[3][0]]
+    ]
+
+def inv_sub_bytes(matrix):
+    """"""
+    for r in range(0, 4):
+        for c in range(0, 4):
+            matrix[r][c]=reverse_lookup((matrix[r][c]))
+    return matrix
+
+def inv_mix_columns(matrix):
+    """"""
+    for c in range(4):
+        col = [
+            matrix[0][c],
+            matrix[1][c],
+            matrix[2][c],
+            matrix[3][c]
+        ]
+        col = [
+            galois_mult(col[0], 14) ^ galois_mult(col[1], 11) ^ galois_mult(col[2], 13) ^ galois_mult(col[3], 9),
+            galois_mult(col[0], 9) ^ galois_mult(col[1], 14) ^ galois_mult(col[2], 11) ^ galois_mult(col[3], 13),
+            galois_mult(col[0], 13) ^ galois_mult(col[1], 9) ^ galois_mult(col[2], 14) ^ galois_mult(col[3], 11),
+            galois_mult(col[0], 11) ^ galois_mult(col[1], 13) ^ galois_mult(col[2], 9) ^ galois_mult(col[3], 14)
+        ]
+        matrix[0][c] = col[0]
+        matrix[1][c] = col[1]
+        matrix[2][c] = col[2]
+        matrix[3][c] = col[3]
+    return matrix

@@ -7,25 +7,34 @@ from binascii import unhexlify
 import sys
 
 # test 1
-original_text = "1122334455667788"
-cipheredtext = "59b3fa373d90c66d45b8b12d83922a77"
-key = "1122334455667788"
-nr = 10
-# test 2
-# key = "Lorem ipsum dol."
-# original_text = "Lorem ipsum dolor sit amet cons."
-# cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
+# original_text = "1122334455667788"
+# cipheredtext = "59b3fa373d90c66d45b8b12d83922a77"
+# key = "1122334455667788"
 # nr = 10
-# test 3
-# key = "Lorem ipsum dol."
-# original_text = "Lorem ipsum dolor sit amet cons.Lorem ipsum dolor sit amet cons."
-# cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391dfcabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
-# nr = 10
+# # test 2
+# # key = "Lorem ipsum dol."
+# # original_text = "Lorem ipsum dolor sit amet cons."
+# # cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
+# # nr = 10
+# # test 3
+# # key = "Lorem ipsum dol."
+# # original_text = "Lorem ipsum dolor sit amet cons.Lorem ipsum dolor sit amet cons."
+# # cipheredtext = "cabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391dfcabe8d499d598f5b5e0e4aa80765653d2adcb474d7e616f5fa7c4ea0722391df"
+# # nr = 10
 
-print(cipheredtext)
-plaintext = aes_decrypt128_ecb(cipheredtext, key, nr)
-print(plaintext)
+# print(cipheredtext)
+# plaintext = aes_decrypt128_ecb(cipheredtext, key, nr)
+# print(plaintext)
 
+# test 4 cbc
+original_text="Lorem ipsum dolor sit amet cons."
+cipheredtext="121cc1017c2b473144b9f9d7bfd7cedf09fd4de11baa6247e6554de744ef8bd6"
+key="Lorem ipsum dol."
+iv = "Lorem ipsum dol."
+_, key, iv = prepare_data_for_encryption_cbc("", key, iv)
+message=aes_decrypt128_cbc(cipheredtext, key, iv)
+print(message)
+# print(block_16_bit("Lorem ipsum dol.")[0])
 
 # j = 0
 # for i in range(len(cipheredtext)):
