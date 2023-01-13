@@ -35,9 +35,13 @@ def cbc_decryption():
             plaintext = aes_decrypt128_cbc(msg_str, key, iv)
             print(plaintext)
         elif len(key_str) == 24:
-            pass
+            _, key, iv = prepare_data_for_encryption_cbc("", key_str, iv_str)
+            plaintext = aes_decrypt192_cbc(msg_str, key, iv)
+            print(plaintext)
         elif len(key_str) == 32:
-            pass
+            _, key, iv = prepare_data_for_encryption_cbc("", key_str, iv_str)
+            plaintext = aes_decrypt256_cbc(msg_str, key, iv)
+            print(plaintext)
         else:
             print("Length of key is invalid")
 
