@@ -165,8 +165,6 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
     plaintext = ""
     k = 2
     iv = block_16_bit(iv)[0]
-    print(f"iv is {iv}")
-    print(num_of_blocks)
     for z in range(num_of_blocks):
         cipher_matrix = []
 
@@ -206,10 +204,6 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
         message = rewrite_matrix_into_list(matrix)
         message = [chr(element) for element in message]
         message = ''.join(message)
-        print("Post decryption")
-        print(f"Cipher matrix {cipher_matrix}")
-        print(f"Round {z}\n{message}")
-        print("-------------------------")
         plaintext += message
         iv = iv_next
         iv = reverse_matrix(iv)
