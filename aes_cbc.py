@@ -179,10 +179,7 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
                 k += 2
                 row.append(strvalue)
             cipher_matrix.append(row)
-        # print(f"Round {z} {cipher_matrix}")
-        # iv_next = 0
         iv_next = cipher_matrix
-        # print(f"iv_next before init {iv_next}")
         # # Init round
         cipher_matrix = reverse_matrix(cipher_matrix)
         round_key = reverse_matrix(expanded_key[-4:])
@@ -214,9 +211,7 @@ def decrypt_block_cbc(cipheredtext, num_of_blocks, expanded_key, nr, iv):
         print(f"Round {z}\n{message}")
         print("-------------------------")
         plaintext += message
-
         iv = iv_next
         iv = reverse_matrix(iv)
-
 
     return plaintext
